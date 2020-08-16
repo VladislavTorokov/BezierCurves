@@ -1,0 +1,103 @@
+﻿<Window x:Class="WorkingWithBezierCurves.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorkingWithBezierCurves"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="550" Width="800" MinWidth="600" MinHeight="350">
+
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="45"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+
+            <!--First Column "ParallelTransfer"-->
+            <TextBox x:Name="textBoxPTX" Grid.Row="0" Grid.Column="1" Margin="2">10</TextBox>
+            <TextBox x:Name="textBoxPTY" Grid.Row="1" Grid.Column="1" Margin="2">0</TextBox>
+            <TextBox x:Name="textBoxPTZ" Grid.Row="2" Grid.Column="1" Margin="2">0</TextBox>
+            <Label Grid.Row="0" Grid.Column="0">X=</Label>
+            <Label Grid.Row="1" Grid.Column="0">Y=</Label>
+            <Label Grid.Row="2" Grid.Column="0">Z=</Label>
+            <Button x:Name="ParallelTransfer" Click="ParallelTransfer_Click" Grid.Row="4" Grid.ColumnSpan="2" Margin="2">Выполнить перенос</Button>
+
+            <!--Second Column "Rotate"-->
+            <StackPanel x:Name="listBoxRotate" Grid.Row="0" Grid.RowSpan="3" Grid.Column="3">
+                <RadioButton GroupName="rotate" Margin="5" Content=" - Ось Х" IsChecked="True"></RadioButton>
+                <RadioButton GroupName="rotate" Margin="5" Content=" - Ось Y"></RadioButton>
+                <RadioButton GroupName="rotate" Margin="5" Content=" - Ось Z"></RadioButton>
+            </StackPanel>
+ 
+            <Label Grid.Row="3" Grid.Column="2">Угол</Label>
+            <TextBox x:Name="tbAngleRotate" Grid.Row="3" Grid.Column="3" Margin="2">10</TextBox>
+            <Button x:Name="Rotate" Click="Rotate_Click" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Margin="2">Выполнить поворот</Button>
+
+            <!--Third Column "ProjectiveTransformation"-->
+            <StackPanel x:Name="listBoxProjectiveTransformation" Grid.Row="0" Grid.RowSpan="3" Grid.Column="5">
+                <RadioButton GroupName="projectiveTransformation" Margin="5" Content=" - Ось Х" IsChecked="True"></RadioButton>
+                <RadioButton GroupName="projectiveTransformation" Margin="5" Content=" - Ось Y"></RadioButton>
+                <RadioButton GroupName="projectiveTransformation" Margin="5" Content=" - Ось Z"></RadioButton>
+            </StackPanel>
+            
+            <Label Grid.Row="3" Grid.Column="4">Фокус</Label>
+            <TextBox x:Name="tbFocusDistance" Grid.Row="3" Grid.Column="5" Margin="2">1</TextBox>
+            <Button x:Name="ProjectiveTransformation" Click="ProjectiveTransformation_Click" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" Margin="2">Выполнить преобразование</Button>
+            
+            <!--Fourth Column "ObliqueShift"-->
+            <ScrollViewer  Grid.Row="0" Grid.RowSpan="3" Grid.Column="6" Grid.ColumnSpan="2">
+                <StackPanel x:Name="listBoxObliqueShift">
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Х по оси Y" IsChecked="True"></RadioButton>
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Х по оси Y"></RadioButton>
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Y по оси X"></RadioButton>
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Y по оси Z"></RadioButton>
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Z по оси X"></RadioButton>
+                    <RadioButton GroupName="obliqueShift" Margin="5,0,0,0" Content="Оси Z по оси Y"></RadioButton>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Label Grid.Row="3" Grid.Column="6">Коэф. K=</Label>
+            <TextBox x:Name="tbObliqueShiftCoefficient" Grid.Row="3" Grid.Column="7" Margin="2">1</TextBox>
+            <Button x:Name="ObliquShift" Click="ObliqueShift_Click" Grid.Row="4" Grid.Column="6" Grid.ColumnSpan="2" Margin="2">Выполнить сдвиг</Button>
+
+            <!--Fifth Column "Scaling"-->
+            <Label Grid.Row="2" Grid.Column="8">Коэф. масштабирования</Label>
+            <TextBox x:Name="tbCoefficientScaling" Grid.Row="3" Grid.Column="8" Margin="2">2</TextBox>
+            <Button x:Name="Scaling" Click="Scaling_Click" Grid.Row="4" Grid.Column="8" Margin="2">Выполнить масштабирование</Button>
+
+            <!--Sixth Column "MainOperations"-->
+            <Button x:Name="Inscription" Click="Inscription_Click" Grid.Column="9" Grid.ColumnSpan="2">Вписать объект</Button>
+            <Label Grid.Row="1" Grid.Column="9">t=</Label>
+            <TextBox x:Name="textBoxT" Grid.Row="1" Grid.Column="10" Margin="2">20</TextBox>
+            <Label Grid.Row="2" Grid.Column="9">u=</Label>
+            <TextBox x:Name="textBoxU" Grid.Row="2" Grid.Column="10" Margin="2">20</TextBox>
+            <Label Grid.Row="3" Grid.Column="9">v=</Label>
+            <TextBox x:Name="textBoxV" Grid.Row="3" Grid.Column="10" Margin="2">20</TextBox>
+            <Button x:Name="OpenFile" Click="OpenFile_Click" Grid.Row="4" Grid.Column="9" Grid.ColumnSpan="2">Открыть файл</Button>
+        </Grid>
+        <Canvas x:Name="picture" Grid.Row="0"></Canvas>
+    </Grid>
+</Window>

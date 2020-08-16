@@ -1,0 +1,15 @@
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.csprojAssemblyReference.cache
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\MainWindow.g.cs
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\App.g.cs
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves_MarkupCompile.cache
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves_MarkupCompile.lref
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\bin\Debug\WorkingWithBezierCurves.exe.config
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\bin\Debug\WorkingWithBezierCurves.exe
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\bin\Debug\WorkingWithBezierCurves.pdb
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\MainWindow.baml
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.g.resources
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.Properties.Resources.resources
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.csproj.GenerateResource.cache
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.csproj.CoreCompileInputs.cache
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.exe
+C:\Users\777\source\repos\WorkingWithBezierCurves\WorkingWithBezierCurves\obj\Debug\WorkingWithBezierCurves.pdb
