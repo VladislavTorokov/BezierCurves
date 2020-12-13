@@ -1,23 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WorkingWithBezierCurves.Objects
 {
-    public class Scene : Base
-    {
-        public Scene()
-        {
-            points = new List<Point>();
-            edges = new List<Edge>();
-        }
-        public void AddPoints(int[][] arrayPoints)
-        {
-            if ((arrayPoints != null) && (points != null))
-                for (int i = 0; i < arrayPoints.Length; i++)
-                    edges.Add(new Edge(points[arrayPoints[i][0]], points[arrayPoints[i][1]]));
-        }
-    }
+	public class Scene : Base
+	{
+		public static string BlockName => "Scene";
+		public static string AdditionalBlockName => "Lines";
+
+		public void SetPoints(double[][] points)
+		{
+			if (points == null)
+				return;
+
+			Points = new Point[points.GetLength(0)];
+			for (int i = 0; i < points.GetLength(0); i++)
+				Points[i] = new Point(points[i]);
+		}
+
+		public void SetEdges(double[][] edges)
+		{
+			var maxIndex = edges.Max(e => e.Max());
+			if (edges == null || Points == null || maxIndex > Points.Length)
+				return;
+
+			Edges = new Edge[edges.GetLength(0)];
+			for (int i = 0; i < edges.GetLength(0); i++)
+				Edges[i] = new Edge( Points[(int)edges[i][0] - 1], Points[(int)edges[i][1] - 1]);
+		}
+	}
 }

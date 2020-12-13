@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ComplexBuilder.cs" />
+    <Compile Include="Objects\Base.cs" />
     <Compile Include="TextProcessor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -71,10 +72,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Objects\Base.cs" />
     <Compile Include="Objects\Basis.cs" />
     <Compile Include="Objects\BezierCurve.cs" />
-    <Compile Include="Objects\Complex.cs" />
     <Compile Include="Objects\Edge.cs" />
     <Compile Include="Objects\Matrix.cs" />
     <Compile Include="Objects\Point.cs" />

@@ -1,203 +1,223 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WorkingWithBezierCurves.Objects;
 using System.IO;
 using WorkingWithBezierCurves.Operations;
+using System.Collections.Generic;
 
 namespace WorkingWithBezierCurves
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        Complex complex;
-        Operations.Drawing drawing;
-        float x0, y0;
+	/// <summary>
+	/// Логика взаимодействия для MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		readonly Drawing drawing = new Drawing();
+		readonly Scaling scaling = new Scaling();
+		readonly Rotation rotation = new Rotation();
+		readonly Inscription inscription = new Inscription();
+		readonly ObliqueShift obliqueShift = new ObliqueShift();
+		readonly ParallelTransfer parallelTransfer = new ParallelTransfer();
+		readonly ProjectiveTransformation projectiveTransformation = new ProjectiveTransformation();
+		Scene scene;
+		BezierCurve bezierCurve;
+		Surface surface;
+		Base[] _objects;
+		float x0, y0;
 
-        public MainWindow()
-        {
-            InitializeComponent();
+		public MainWindow()
+		{
+			InitializeComponent();
 
-            //picture = new Drawing();
-            complex = new Complex();
-            drawing = new Operations.Drawing();
-            x0 = 0;
-            y0 = 0;
-        }
+			//picture = new Drawing();
+			drawing = new Drawing();
+			x0 = 0;
+			y0 = 0;
+		}
 
-        private void OpenFile_Click(object sender, RoutedEventArgs e)
-        {
-            if (picture.ActualWidth != 0 && picture.ActualHeight != 0)
-            {
-                x0 = (float)picture.ActualWidth / 2;
-                y0 = (float)picture.ActualHeight / 2;
-            }
+		private void OpenFile_Click(object sender, RoutedEventArgs e)
+		{
+			if (picture.ActualWidth != 0 && picture.ActualHeight != 0)
+			{
+				x0 = (float)picture.ActualWidth / 2;
+				y0 = (float)picture.ActualHeight / 2;
+			}
 
-            OpenFileDialog openFile = new OpenFileDialog();
-            bool? result = openFile.ShowDialog();
-            if (result == true)
-            {
-                // Считываение текста
-                string text = File.ReadAllText(openFile.FileName);
+			OpenFileDialog openFile = new OpenFileDialog();
+			bool? result = openFile.ShowDialog();
+			if (result != true)
+				MessageBox.Show("не удалось открыть файл", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                // Обработка текста и передача координат
-                TextProcessor textProcessor = new TextProcessor(text);
-                complex = textProcessor.GetComplex();
+			scene = null;
+			bezierCurve = null;
+			surface = null;
+			_objects = null;
+			// Считываение текста
+			string text = File.ReadAllText(openFile.FileName);
 
-                if (complex.bezierCurves != null)
-                {
-                    SetAccuracy();
-                }
-
-                if (complex.surfaces != null)
-                {
-                    SetParametersUV();
-                }
-
-                DrawPicture();
-            }
-        }
-
-        private void ParallelTransfer_Click(object sender, RoutedEventArgs e)
-        {
-            var valueXYZ = new double[3];
-            valueXYZ[0] = double.Parse(textBoxPTX.Text);
-            valueXYZ[1] = double.Parse(textBoxPTY.Text);
-            valueXYZ[2] = double.Parse(textBoxPTZ.Text);
-
-            ParallelTransfer parallelTransfer = new ParallelTransfer(valueXYZ, complex);
-
-            DrawPicture();
-        }
+			// Обработка текста и передача координат
+			TextProcessor textProcessor = new TextProcessor(text);
 
 
-        private void Rotate_Click(object sender, RoutedEventArgs e)
-        {
-            var angle = double.Parse(tbAngleRotate.Text) * Math.PI / 180;
-            
-            var radioButtons = listBoxRotate.Children.OfType<RadioButton>();
-            foreach (var radioButton in radioButtons)
-            {
-                if (radioButton.IsChecked ?? false)
-                {
-                    var index = radioButtons.ToList().IndexOf(radioButton);
+			var objects = new List<Base>();
 
-                    Operations.Rotation rotation = new Operations.Rotation(index, angle, complex);
-                }
-            }
+			if (textProcessor.CheckBlockExists(Scene.BlockName))
+			{
+				scene = new Scene();
+				scene.SetPoints(textProcessor.ReadDataFromBlock("Points"));
+				scene.SetEdges(textProcessor.ReadDataFromBlock("Lines"));
+				objects.Add(scene);
+			}
+			if(textProcessor.CheckBlockExists(BezierCurve.BlockName))
+			{
+				bezierCurve = new BezierCurve();
+				bezierCurve.SetControlPoints(textProcessor.ReadDataFromBlock("BezierCurves"));
+				var parameterT = CheckParameter(textBoxT.Text);
+				bezierCurve.SetAccuracy(parameterT);
+				objects.Add(bezierCurve);
+			}
+			if (textProcessor.CheckBlockExists(Surface.BlockName))
+			{
+				surface = new Surface();
+				surface.SetControlPoints(textProcessor.ReadDataFromBlock("Surfaces"));
+				var parameterU = CheckParameter(textBoxU.Text);
+				var parameterV = CheckParameter(textBoxV.Text);
+				surface.SetParameters(parameterU, parameterV);
+				objects.Add(surface);
+			}
 
-            DrawPicture();
-        }
+			if (objects.Count < 1)
+				return;
 
-        private void ProjectiveTransformation_Click(object sender, RoutedEventArgs e)
-        {
-            var radioButtons = listBoxProjectiveTransformation.Children.OfType<RadioButton>();
-            foreach (var radioButton in radioButtons)
-            {
-                if (radioButton.IsChecked ?? false)
-                {
-                    var index = radioButtons.ToList().IndexOf(radioButton);
+			_objects = objects.ToArray();
 
-                    var coefficient = double.Parse(tbFocusDistance.Text);
+			DrawPicture();
+		}
 
-                    ProjectiveTransformation projectiveTransformation = new ProjectiveTransformation(index, coefficient, complex);
-                }
-            }
+		private void ParallelTransfer_Click(object sender, RoutedEventArgs e)
+		{
+			var valueXYZ = new double[3];
+			valueXYZ[0] = double.Parse(textBoxPTX.Text);
+			valueXYZ[1] = double.Parse(textBoxPTY.Text);
+			valueXYZ[2] = double.Parse(textBoxPTZ.Text);
 
-            DrawPicture();
-        }
+			foreach (var root in _objects)
+			{
+				parallelTransfer.Execute(valueXYZ, root.Points);
+			}
 
-        private void ObliqueShift_Click(object sender, RoutedEventArgs e)
-        {
-            var radioButtons = listBoxObliqueShift.Children.OfType<RadioButton>();
-            foreach (var radioButton in radioButtons)
-            {
-                if (radioButton.IsChecked ?? false)
-                {
-                    var index = radioButtons.ToList().IndexOf(radioButton);
+			DrawPicture();
+		}
 
-                    var coefficient = double.Parse(tbObliqueShiftCoefficient.Text);
 
-                    ObliqueShift obliqueShift = new ObliqueShift(index, coefficient, complex);
-                }
-            }
+		private void Rotate_Click(object sender, RoutedEventArgs e)
+		{
+			var angle = double.Parse(tbAngleRotate.Text) * Math.PI / 180;
 
-            DrawPicture();
-        }
+			var radioButtons = listBoxRotate.Children.OfType<RadioButton>();
+			foreach (var radioButton in radioButtons)
+			{
+				if (radioButton.IsChecked ?? false)
+				{
+					var index = radioButtons.ToList().IndexOf(radioButton);
 
-        private void Scaling_Click(object sender, RoutedEventArgs e)
-        {
-            var valueScaling = double.Parse(tbCoefficientScaling.Text);
+					foreach (var root in _objects)
+					{
+						rotation.Execute(index, angle, root.Points);
+					}
+				}
+			}
 
-            Scaling scaling = new Scaling(valueScaling, complex);
+			DrawPicture();
+		}
 
-            DrawPicture();
-        }
+		private void ProjectiveTransformation_Click(object sender, RoutedEventArgs e)
+		{
+			var radioButtons = listBoxProjectiveTransformation.Children.OfType<RadioButton>();
+			foreach (var radioButton in radioButtons)
+			{
+				if (radioButton.IsChecked ?? false)
+				{
+					var index = radioButtons.ToList().IndexOf(radioButton);
 
-        private void Inscription_Click(object sender, RoutedEventArgs e)
-        {
-            x0 = 0;
-            y0 = 0;
-            if (picture.ActualWidth != 0 && picture.ActualHeight != 0)
-            {
-                var width = picture.ActualWidth;
-                var height = picture.ActualHeight;
+					var coefficient = double.Parse(tbFocusDistance.Text);
 
-                Inscription inscription = new Inscription(width, height, complex);
-            }
+					foreach (var root in _objects)
+					{
+						projectiveTransformation.Execute(index, coefficient, root.Points);
+					}
+				}
+			}
 
-            DrawPicture();
-        }
+			DrawPicture();
+		}
 
-        private void DrawPicture()
-        {
+		private void ObliqueShift_Click(object sender, RoutedEventArgs e)
+		{
+			var radioButtons = listBoxObliqueShift.Children.OfType<RadioButton>();
+			foreach (var radioButton in radioButtons)
+			{
+				if (radioButton.IsChecked ?? false)
+				{
+					var index = radioButtons.ToList().IndexOf(radioButton);
 
-            drawing.Clear(picture);
+					var coefficient = double.Parse(tbObliqueShiftCoefficient.Text);
 
-            drawing.Draw(picture, complex.scenes.ToArray(), x0, y0);
-            drawing.Draw(picture, complex.bezierCurves.ToArray(), x0, y0);
-            drawing.Draw(picture, complex.surfaces.ToArray(), x0, y0);
-        }
+					foreach (var root in _objects)
+					{
+						obliqueShift.Execute(index, coefficient, root.Points);
+					}
+				}
+			}
 
-        private void SetAccuracy()
-        {
-            if (textBoxT.Text == "")
-                MessageBox.Show("Введите параметр t");
-            else
-            {
-                var accuracy = int.Parse(textBoxT.Text);
+			DrawPicture();
+		}
 
-                foreach (BezierCurve bezierCurve in complex.bezierCurves)
-                    bezierCurve.SetAccuracy(accuracy);
-            }
-        }
+		private void Scaling_Click(object sender, RoutedEventArgs e)
+		{
+			var valueScaling = double.Parse(tbCoefficientScaling.Text);
 
-        private void SetParametersUV()
-        {
-            if ((textBoxU.Text == "") || (textBoxV.Text == ""))
-                MessageBox.Show("Введите параметры u и v");
-            else
-            {
-                int parameterU = int.Parse(textBoxU.Text);
-                int parameterV = int.Parse(textBoxV.Text);
+			foreach (var root in _objects)
+			{
+				scaling.Execute(valueScaling, root.Points);
+			}
 
-                foreach (Surface surface in complex.surfaces)
-                    surface.SetParameters(parameterU, parameterV);
-            }
-        }
-    }
+			DrawPicture();
+		}
+
+		private void Inscription_Click(object sender, RoutedEventArgs e)
+		{
+			x0 = 0;
+			y0 = 0;
+			if (picture.ActualWidth != 0 && picture.ActualHeight != 0)
+			{
+				var width = picture.ActualWidth;
+				var height = picture.ActualHeight;
+
+				inscription.Execute(width, height, _objects);
+			}
+
+			DrawPicture();
+		}
+
+		private void DrawPicture()
+		{
+			picture.Children.Clear();
+
+			drawing.Draw(picture, _objects, x0, y0);
+		}
+
+		private int CheckParameter(string parameter)
+		{
+			var result = int.TryParse(parameter, out var value);
+
+			if (!result)
+				MessageBox.Show("введите параметры U и V", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+			return value;
+		}
+	}
 }

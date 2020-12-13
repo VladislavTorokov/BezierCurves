@@ -1,80 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using WorkingWithBezierCurves.Objects;
 
 namespace WorkingWithBezierCurves.Operations
 {
     public class Inscription
     {
-        private readonly List<Base> roots;
-        private readonly double width;
-        private readonly double height;
-        private double Xmax;
-        private double Xmin;
-        private double Ymax;
-        private double Ymin;
-        private double lengthX;
-        private double lengthY;
+        private Base[] _roots;
+        private double _width;
+        private double _height;
+        private double _xMax;
+        private double _xMin;
+        private double _yMax;
+        private double _yMin;
+        private double _lengthX;
+        private double _lengthY;
 
-        public Inscription(double width, double height, Complex complex)
+        public void Execute(double width, double height, Base[] roots)
         {
-            this.width = width;
-            this.height = height;
+            _width = width;
+            _height = height;
 
-            if (complex != null)
-            {
-                roots = new List<Base>();
-                roots.AddRange(complex.scenes);
-                roots.AddRange(complex.bezierCurves);
-                roots.AddRange(complex.surfaces);
+            if (roots == null)
+                return;
 
-                DoOperation(complex);
-            }
-        }
+            roots.Select(r => r != null && r.Points != null);
+            _roots = roots;
 
-        private void DoOperation(Complex complex)
-        {
-            if (roots.Count > 0)
-            {
-                FindExtremePoints();
-                CalculateLengthXY();
-                var scalingCoefficient = GetScalingCoef();
+            if (_roots.Length < 1)
+				return;
 
+			FindExtremePoints();
+			GetLengthByAxes();
+			var scalingCoefficient = GetScalingСoefficient();
+
+			var valueTransfer = new double[] { -_xMin, -_yMin, 0 };
+			foreach (var scene in roots)
+			{
                 // Выравнивание
-                var valueTransfer = new double[] { -Xmin, -Ymin, 0 };
-                ParallelTransfer parallelTransfer = new ParallelTransfer(valueTransfer, complex);
+                new ParallelTransfer().Execute(valueTransfer, scene.Points);
 
-                // Масштабирование
-                Scaling scaling = new Scaling(scalingCoefficient, complex);
-            }
-        }
+				// Масштабирование
+				new Scaling().Execute(scalingCoefficient, scene.Points);
+			}
+		}
 
-        //Находим максимальные и минимальные точки объектов по осям Х и Y
-        private void FindExtremePoints()
+		//Находим максимальные и минимальные точки объектов по осям Х и Y
+		private void FindExtremePoints()
         {
-            Xmin = roots.Min(root => root.points.Min(point => point.Coordinates[0]));
-            Xmax = roots.Max(root => root.points.Max(point => point.Coordinates[0]));
-            Ymin = roots.Min(root => root.points.Min(point => point.Coordinates[1]));
-            Ymax = roots.Max(root => root.points.Max(point => point.Coordinates[1]));
+            _xMin = _roots.Min(root => root.Points.Min(point => point.Coordinates[0]));
+            _xMax = _roots.Max(root => root.Points.Max(point => point.Coordinates[0]));
+            _yMin = _roots.Min(root => root.Points.Min(point => point.Coordinates[1]));
+            _yMax = _roots.Max(root => root.Points.Max(point => point.Coordinates[1]));
         }
 
         //Получаем максимальные длины объекта по осям Х и Y
-        private void CalculateLengthXY()
+        private void GetLengthByAxes()
         {
-            lengthX = Xmax - Xmin;
-            lengthY = Ymax - Ymin;
+            _lengthX = _xMax - _xMin;
+            _lengthY = _yMax - _yMin;
         }
 
         //Возвращаем масштабный коэффициент в зависимости от соотношения длин объекта по осям и габаритов picturebox
-        private double GetScalingCoef()
+        private double GetScalingСoefficient()
         {
-            if (width / lengthX < height / lengthY)
-                return width / lengthX;
-            else
-                return height / lengthY;
+            var xRatio = _width / _lengthX;
+            var yRatio = _height / _lengthY;
+            return (xRatio < yRatio) ? xRatio : yRatio;
         }
     }
 }

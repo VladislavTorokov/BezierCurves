@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorkingWithBezierCurves.Objects;
+﻿using WorkingWithBezierCurves.Objects;
 
 namespace WorkingWithBezierCurves.Operations
 {
     public class Scaling : AffineTransformation
     {
-        public Scaling(double value, Complex complex)
-        {
-            basicMatrix = new Matrix();
-            basicMatrix.elements[0, 0] = value;
-            basicMatrix.elements[1, 1] = value;
-            basicMatrix.elements[2, 2] = value;
+        public void Execute(double value, Point[] points)
+		{
+            basicMatrix.Elements[0, 0] = value;
+            basicMatrix.Elements[1, 1] = value;
+            basicMatrix.Elements[2, 2] = value;
 
-            ChangeComplex(complex);
+            ChangePointValues(points);
         }
     }
 }

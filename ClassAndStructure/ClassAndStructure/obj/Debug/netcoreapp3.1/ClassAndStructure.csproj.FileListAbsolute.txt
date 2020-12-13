@@ -1,0 +1,13 @@
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.exe
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.deps.json
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.runtimeconfig.json
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.runtimeconfig.dev.json
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.dll
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\bin\Debug\netcoreapp3.1\ClassAndStructure.pdb
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.csprojAssemblyReference.cache
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.AssemblyInfoInputs.cache
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.AssemblyInfo.cs
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.csproj.CoreCompileInputs.cache
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.dll
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.pdb
+C:\VisualStudio\ClassAndStructure\ClassAndStructure\obj\Debug\netcoreapp3.1\ClassAndStructure.genruntimeconfig.cache

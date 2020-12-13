@@ -1,52 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorkingWithBezierCurves.Objects
+﻿namespace WorkingWithBezierCurves.Objects
 {
     public class BezierCurve : Base
     {
-        public Point[] _controlPoints { get; set; }
+		public static string BlockName => "BezierCurve";
+
+		private Point[] _controlPoints;
         private readonly Basis basis;
 
         public BezierCurve()
         {
-            _controlPoints = new Point[4];
-            for (int i = 0; i < _controlPoints.Length; i++)
-                _controlPoints[i] = new Point();
-
-            points = new List<Point>();
-            edges = new List<Edge>();
-
             basis = new Basis();
         }
 
-        public void SetPoints(Point[] points)
+        public void SetControlPoints(double[][] controlPoints)
         {
-            _controlPoints = points;
+            var length = controlPoints.GetLength(0);
+            if (controlPoints == null || length < 4 || length % 4 != 0)
+                return;
+
+            _controlPoints = new Point[length];
+            for (int i = 0; i < length; i++)
+                _controlPoints[i] = new Point(controlPoints[i]);
         }
 
         public void SetAccuracy(int parameter)
-        {
-            double[] basis = new double[4];
+        { 
+            Points = new Point[parameter+1];
+            Edges = new Edge[parameter];
 
             for (int t = 0; t <= parameter; t++)
             {
-                points.Add(new Point());
-                basis = this.basis.GetBasis((double)t / parameter);
+                Points[t] = new Point(new[] { 0.0, 0, 0, 0 });
+                var basis = this.basis.GetBasis((double)t / parameter);
                 for (int j = 0; j < 4; j++)
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        points[t].Coordinates[i] += _controlPoints[j].Coordinates[i] * basis[j];
+                        Points[t].Coordinates[i] += _controlPoints[j].Coordinates[i] * basis[j];
                     }
                 }
-                points[t].Normalization();
+                Points[t].Normalization();
                 if (t > 0)
                 {
-                    edges.Add(new Edge(points[t - 1], points[t]));
+                    Edges[t - 1] = new Edge(Points[t - 1],Points[t]);
                 }
             }
         }

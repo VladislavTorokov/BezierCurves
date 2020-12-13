@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace WorkingWithBezierCurves.Objects
+﻿namespace WorkingWithBezierCurves.Objects
 {
     public class Basis
     {
-        private double[] g;
+        private readonly double[] g;
 
         public Basis()
         {

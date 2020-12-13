@@ -1,73 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WorkingWithBezierCurves.Objects
+﻿namespace WorkingWithBezierCurves.Objects
 {
     public class Surface : Base
     {
-        public Point[] _controlPoints { get; set; }
-        private Basis basisU;
-        private Basis basisV;
+        public static string BlockName => "Surface";
+
+		private Point[] _controlPoints;
+        private readonly Basis basisU;
+        private readonly Basis basisV;
 
         public Surface()
         {
-            points = new List<Point>();
-            edges = new List<Edge>();
-
-            _controlPoints = new Point[16];
-
-            for (int i = 0; i < 16; i++)
-                _controlPoints[i] = new Point();
-
             basisU = new Basis();
             basisV = new Basis();
         }
 
-        public void SetPoints(Point[] points)
+        public void SetControlPoints(double[][] controlPoints)
         {
-            _controlPoints = points;
+            var length = controlPoints.GetLength(0);
+            if (controlPoints == null || length < 16 || length % 16 != 0)
+                return;
+
+            _controlPoints = new Point[length];
+            for (int i = 0; i < length; i++)
+                _controlPoints[i] = new Point(controlPoints[i]);
         }
 
         public void SetParameters(int paramU, int paramV)
         {
-            double[] basisParamU = new double[4];
-            double[] basisParamV = new double[4];
-            int quantityEdges = 2 * (paramU) * (paramV + 1);
+            if (_controlPoints == null)
+                return;
 
+            var numberOfPoints = (paramU + 1) * (paramV + 1);
+            var numberOfEdges = numberOfPoints + paramU * paramV - 1;
+
+            Points = new Point[numberOfPoints];
+            Edges = new Edge[numberOfEdges];
+
+            var edgeNumber = 0;
             for (int v = 0; v <= paramV; v++)
             {
-                basisParamV = basisV.GetBasis((double)v / paramV);
+                var basisParamV = basisV.GetBasis((double)v / paramV);
                 for (int u = 0; u <= paramU; u++)
                 {
-                    points.Add(new Point());
-                    basisParamU = basisU.GetBasis((double)u / paramU);
+                    Points[u + ((paramU + 1) * v)] = new Point(new[] { 0.0, 0, 0, 0 });
+                    var basisParamU = basisU.GetBasis((double)u / paramU);
                     for (int k = 0; k < 4; k++)
                     {
                         for (int j = 0; j < 4; j++)
                         {
                             for (int i = 0; i < 4; i++)
                             {
-                                points[u + ((paramU + 1) * v)].Coordinates[i] += _controlPoints[(k * 4) + j].Coordinates[i] * basisParamU[j] * basisParamV[k];
+                                Points[u + ((paramU + 1) * v)].Coordinates[i] += _controlPoints[(k * 4) + j].Coordinates[i] * basisParamU[j] * basisParamV[k];
                             }
                         }
                     }
-                    points[u + ((paramU + 1) * v)].Normalization();
+                    Points[u + ((paramU + 1) * v)].Normalization();
+
+                    if (u > 0)
+                    {
+                        Edges[edgeNumber++] = new Edge(Points[(u + (paramU + 1) * v) - 1], Points[u + ((paramU + 1) * v)]);
+                    }
+                    if (v > 0)
+					{
+                        Edges[edgeNumber++] = new Edge(Points[u + (paramU + 1) * (v - 1)], Points[u + ((paramU + 1) * v)]);
+                    }
                 }
             }
 
             // Заполняем ребра точками
-            for (int i = 0; i < points.Count; i++)
-            {
-                if ((i + 1) % (paramU + 1) != 0)
-                {
-                    edges.Add(new Edge(points[i], points[i + 1]));             //Горизонтальные линии
-                }
-                if (i < quantityEdges / 2)
-                    edges.Add(new Edge(points[i], points[i + paramU + 1]));    //Вертикальные линии
-            }
+            //for (int i = 0; i < Points.Length; i++)
+            //{
+            //    if (i % paramU != 0)
+            //    {
+            //        Edges[i] = new Edge( Points[i], Points[i + 1]);             //Горизонтальные линии
+            //    }
+            //    if (i < numberOfEdges / 2)
+            //        Edges[i] = new Edge( Points[i + paramU - 1], Points[i]);    //Вертикальные линии
+            //}
         }
     }
 }
